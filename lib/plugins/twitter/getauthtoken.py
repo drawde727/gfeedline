@@ -1,41 +1,41 @@
-from oauth import oauth
 import webbrowser
 import urllib
 import cgi
 
+from oauth import oauth
+
 consumer_key = 'zniRMF8u0aOuLPb1Q94QNg'
 consumer_secret = 'iuYLw5KPRodf5crYj3caIPxqVF62hIm3ZRziUbtuM'
-uri_prefix = 'http://twitter.com'
-consumer = oauth.OAuthConsumer(consumer_key, consumer_secret)
+CONSUMER = oauth.OAuthConsumer(consumer_key, consumer_secret)
 SIGNATURE_METHOD = oauth.OAuthSignatureMethod_HMAC_SHA1()
+
 
 class TwitterAuthorization(object):
 
     def open_authorize_uri(self):
 
         request = oauth.OAuthRequest.from_consumer_and_token(
-            consumer, 
+            CONSUMER, 
             callback='oob',
             http_url= 'http://twitter.com/oauth/request_token' )
-        request.sign_request(SIGNATURE_METHOD, consumer, token=None)
+        request.sign_request(SIGNATURE_METHOD, CONSUMER, token=None)
 
         stream = urllib.urlopen(request.to_url())
         tokendata = stream.read()
         token = oauth.OAuthToken.from_string(tokendata)
 
-        uri = 'http://twitter.com/oauth/authorize?mode=desktop&oauth_token=' + token.key
-
+        uri = ('http://twitter.com/oauth/authorize'
+               '?mode=desktop&oauth_token=' + token.key)
         webbrowser.open(uri)
         return token
 
     def get_access_token(self, pin, request_token):
         request = oauth.OAuthRequest.from_consumer_and_token(
-            consumer,
+            CONSUMER,
             parameters={'oauth_verifier': pin,
                         'oauth_token': request_token.key},
-            http_url= 'http://twitter.com/oauth/access_token',
-            )
-        request.sign_request(SIGNATURE_METHOD, consumer, token=request_token)
+            http_url= 'http://twitter.com/oauth/access_token' )
+        request.sign_request(SIGNATURE_METHOD, CONSUMER, token=request_token)
 
         stream = urllib.urlopen(request.to_url())
         tokendata = stream.read()

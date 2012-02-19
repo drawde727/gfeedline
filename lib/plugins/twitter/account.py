@@ -2,7 +2,7 @@ from ...twittytwister import twitter, txml
 from oauth import oauth
 
 from gi.repository import GObject
-from getauthtoken import consumer
+from getauthtoken import CONSUMER
 from ...utils.settings import SETTINGS_TWITTER
 
 class AuthorizedTwitterAccount(GObject.GObject):
@@ -15,7 +15,7 @@ class AuthorizedTwitterAccount(GObject.GObject):
         super(AuthorizedTwitterAccount, self).__init__()
 
         token = self._get_token()
-        self.api = TwitterFeed(consumer=consumer, token=token)
+        self.api = TwitterFeed(consumer=CONSUMER, token=token)
         SETTINGS_TWITTER.connect("changed::access-secret", 
                                  self._on_update_credential)
 
@@ -52,7 +52,7 @@ class Twitter(twitter.Twitter):
     def update_token(self, token):
         self.use_auth = True
         self.use_oauth = True
-        self.consumer = consumer
+        self.consumer = CONSUMER
         self.token = token
         self.signature_method = oauth.OAuthSignatureMethod_HMAC_SHA1()
 
