@@ -15,6 +15,7 @@ from plugins.twitter.api import TwitterAPIDict
 from plugins.twitter.output import TwitterOutputFactory
 from plugins.twitter.account import AuthorizedTwitterAccount
 from constants import CONFIG_HOME, Column
+from preferences.filters import FilterListStore
 
 
 class FeedListStore(Gtk.ListStore):
@@ -30,6 +31,7 @@ class FeedListStore(Gtk.ListStore):
             str, GdkPixbuf.Pixbuf, str, str, str, str, object, object, object)
         self.window = MainWindow(self)
         self.api_dict = TwitterAPIDict()
+        self.filter_liststore = FilterListStore()
         self.twitter_account = AuthorizedTwitterAccount()
 
         self.save = SaveListStore()
@@ -50,7 +52,8 @@ class FeedListStore(Gtk.ListStore):
 
         factory = TwitterOutputFactory()
         api_obj = factory.create_obj(api, view, 
-                                     source.get('argument'), source.get('options'))
+                                     source.get('argument'), source.get('options'),
+                                     self.filter_liststore)
 
         list = [source.get('group'),
                 GdkPixbuf.Pixbuf(),

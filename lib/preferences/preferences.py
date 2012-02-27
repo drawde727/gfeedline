@@ -38,6 +38,11 @@ class Preferences(object):
         self.combobox_theme = ComboboxTheme(gui, self.liststore)
         self.autostart = AutoStartWithCheckButton(gui, 'gfeedline')
 
+
+        self.filter_treeview = gui.get_object('filter_treeview')
+        self.filter_treeview.set_model(self.liststore.filter_liststore)
+
+
         SETTINGS.connect("changed::window-sticky", self.on_settings_sticky_change)
         self.on_settings_sticky_change(SETTINGS, 'window-sticky')
         sticky = SETTINGS.get_boolean('window-sticky')

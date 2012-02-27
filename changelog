@@ -1,3 +1,7 @@
+2012-02-27  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* filters.py: Added a global filter.
+
 2012-02-24  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
 
 	* NEWS: 1.0.1 release.

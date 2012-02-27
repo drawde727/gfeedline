@@ -24,17 +24,18 @@ from ...utils.settings import SETTINGS
 
 class TwitterOutputFactory(object):
 
-    def create_obj(self, api, view, argument, options):
-        obj = api.output(api, view, argument, options)
+    def create_obj(self, api, view, argument, options, filters):
+        obj = api.output(api, view, argument, options, filters)
         return obj
 
 class TwitterOutputBase(object):
 
-    def __init__(self, api, view=None, argument='', options={}):
+    def __init__(self, api, view=None, argument='', options={}, filters=None):
         self.api = api
         self.view = view
         self.argument = argument
         self.options = options
+        self.filters = filters
 
         self.all_entries = []
         self.last_id = 0
@@ -52,12 +53,15 @@ class TwitterOutputBase(object):
     def check_entry(self, entry, text, *args):
         pass_rt = text.startswith('RT @') and not self.api.include_rt
 
-        has_bad = bool([bad for bad in SETTINGS.get_strv('bad-words')
-                        if text.find(bad.decode('utf-8')) >= 0])
+        #has_bad = bool([bad for bad in SETTINGS.get_strv('bad-words')
+        #                if text.find(bad.decode('utf-8')) >= 0])
+
+        has_bad = bool([row for row in self.filters
+               if text.find(row[1].decode('utf-8')) >= 0])
 
         if pass_rt or has_bad:
-            # print "Del: ", text
-            pass
+            print "Del: ", text
+            #pass
         else:
             self.buffer_entry(entry, args)
 
@@ -91,8 +95,9 @@ class TwitterRestOutput(TwitterOutputBase):
 
     api_connections = 0
 
-    def __init__(self, api, view=None, argument='', options={}):
-        super(TwitterRestOutput, self).__init__(api, view, argument, options)
+    def __init__(self, api, view=None, argument='', options={}, filters=None):
+        super(TwitterRestOutput, self).__init__(api, view, argument, options, 
+                                                filters)
         TwitterRestOutput.api_connections += 1
         self.delayed = DelayedPool()
 
@@ -194,8 +199,9 @@ class TwitterSearchOutput(TwitterRestOutput):
 
 class TwitterFeedOutput(TwitterOutputBase):
 
-    def __init__(self, api, view=None, argument='', options={}):
-        super(TwitterFeedOutput, self).__init__(api, view, argument, options)
+    def __init__(self, api, view=None, argument='', options={}, filters=None):
+        super(TwitterFeedOutput, self).__init__(api, view, argument, options, 
+                                                filters)
         self.reconnect_interval = 10
 
     def buffer_entry(self, entry, *args):
