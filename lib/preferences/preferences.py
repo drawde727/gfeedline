@@ -133,14 +133,17 @@ class ComboboxTheme(object):
 
     def __init__(self, gui):
         theme = Theme()
-        self.labels = theme.get_all_list()
+        self.labels = sorted(theme.get_all_list())
 
         self.combobox = gui.get_object('comboboxtext_theme')
         for text in self.labels:
             self.combobox.append_text(text)
 
-        selected_theme = SETTINGS_VIEW.get_string('theme')
-        num = self.labels.index(selected_theme.decode('utf-8'))
+        selected_theme = SETTINGS_VIEW.get_string('theme').decode('utf-8')
+        if selected_theme not in self.labels:
+            selected_theme = 'Twitter'
+
+        num = self.labels.index(selected_theme)
         self.combobox.set_active(num)
 
     def check_active(self):
