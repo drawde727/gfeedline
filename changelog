@@ -1,3 +1,37 @@
+2012-07-14  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* NEWS: 1.6.1 release.
+
+2012-07-09  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* po/pt.po: Added new Portuguese translation.  Thanks Valter Asensio!
+
+2012-07-05  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* twitter/tweetentry.py: Fixed an escapeing problem of client info
+	  links.  Improved a regular expression for Japanese hash tag.
+
+2012-07-04  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* es_ES.po: Updated Spanish translation.  Thanks Adolfo Jayme
+	  Barrientos!
+	* twitter/tweetentry.py (AddedHtmlMarkup.convert): Fixed character
+	  escaping problems.
+
+2012-06-30  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* twitter/api.py (TwitterAPIListTimeLine.get_options): Added
+	  checking for list names. Thanks @Adan2JP!
+
+2012-06-29  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* menu.py (FavMenuItem._is_enabled): Added support for self-favouring.
+	* gfeedline.glade: Improved the welcome message.
+
+2012-06-15  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* et.po: Updated Estonian translation.  Thanks Rivo Zängov!
+
 2012-06-02  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
 
 	* NEWS: 1.6 release.
