@@ -3,6 +3,29 @@
 	* twittytwister/twitter.py, twitter/account.py: Fixed Twitter API
 	  endpoints. The API version number '1' is required.
 
+2012-10-10  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* facebook/entry.py, html/readmore.js: Added support for 'See
+	  more' on Facebook.
+
+2012-10-07  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* preferences/feedsource.py, account.py: Implemented default
+	  target on feed source dialogs.
+
+2012-10-06  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* liststore.py, accountliststore.py, plugins/facebook/*:
+	  Implemented basic support for Facebook news feed.
+
+2012-10-05  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* plugins/facebook/*: Implemented a Facebook authorization assistant.
+
+2012-09-25  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* preferences/: Code refactoring.
+
 2012-09-17  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
 
 	* NEWS: 1.7 release.

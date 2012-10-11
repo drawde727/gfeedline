@@ -17,6 +17,22 @@ TweetEntry -- RestRetweetEntry  -- FeedRetweetEntry
            \- FeedEventEntry
 """
 
+class TweetEntryDict(dict):
+
+    def __init__(self, **init_dict):
+        super(TweetEntryDict, self).__init__(dict(init_dict))
+
+    def __getitem__(self, key):
+        if key == 'permalink':
+            val = 'gfeedline://twitter.com/%s/status/%s' % (
+                self['user_name'], self['id'])
+        elif key == 'user_name2':
+            val = '@'+self['user_name']
+
+        else:
+            val = super(TweetEntryDict, self).__getitem__(key)
+
+        return val
 
 class TweetEntry(object):
 
@@ -35,7 +51,7 @@ class TweetEntry(object):
 
         styles = self._get_styles(api, user.screen_name, entry)
 
-        entry_dict = dict(
+        entry_dict = TweetEntryDict(
             date_time=time.get_local_time(),
             id=entry.id,
             styles=styles,
@@ -185,7 +201,7 @@ class MyFeedRetweetEntry(FeedRetweetEntry):
         target_date_time = self._get_target_date_time(
             self.entry, self.entry.user.screen_name)
 
-        entry_dict = dict(
+        entry_dict = TweetEntryDict(
             date_time=TwitterTime(created_at).get_local_time(),
             id='',
             styles='',
@@ -230,7 +246,7 @@ class SearchTweetEntry(TweetEntry):
 
         styles = self._get_styles(api, name)
 
-        entry_dict = dict(
+        entry_dict = TweetEntryDict(
             date_time=time.get_local_time(),
             id=entry_id,
             styles=styles,
@@ -301,7 +317,7 @@ class FeedEventEntry(TweetEntry):
             target_body = ''
             target_date_time = ''
 
-        entry_dict = dict(
+        entry_dict = TweetEntryDict(
             date_time=TwitterTime(entry.created_at).get_local_time(),
             id='',
             styles='',

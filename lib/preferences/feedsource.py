@@ -1,6 +1,5 @@
 from gi.repository import Gtk
 
-from ..plugins.twitter.api import TwitterAPIDict
 from ..constants import Column
 from ..accountliststore import AccountColumn
 from ..utils.commonui import MultiAccountSensitiveWidget
@@ -19,10 +18,13 @@ class FeedSourceDialog(DialogBase):
         self.combobox_target = TargetCombobox(self.gui, self.liststore_row)
         self.entry_name = self.gui.get_object('entry_name')
         self.label_argument = self.gui.get_object('label_argument')
-        self.entry_argument = ArgumentEntry(self.gui, self.combobox_target)
+        self.entry_argument = ArgumentEntry(self.gui, self.combobox_target,
+                                            self.combobox_source)
         self.entry_group = self.gui.get_object('entry_group')
 
         self.options_tab = OptionsTab(self.gui, self.liststore_row)
+
+        self.on_combobox_source_changed()
         self.on_comboboxtext_target_changed()
 
     def run(self):
@@ -61,13 +63,20 @@ class FeedSourceDialog(DialogBase):
         v['options'].update(options)
 
         if response_id == Gtk.ResponseType.OK:
-            self.combobox_target.set_recent()
+            account_obj = self.combobox_source.get_active_account_obj()
+            self.combobox_target.set_recent(account_obj)
         self.dialog.destroy()
 
         return response_id , v
 
+    def on_combobox_source_changed(self, combobox=None):
+        account_obj = self.combobox_source.get_active_account_obj()
+        self.combobox_target.set_label_text(account_obj)
+
     def on_comboboxtext_target_changed(self, *args):
-        status = self.combobox_target.has_argument_entry_enabled()
+        account_obj = self.combobox_source.get_active_account_obj()
+        status = self.combobox_target.has_argument_entry_enabled(account_obj.api_dict)
+
         self.label_argument.set_sensitive(status)
         self.entry_argument.set_sensitive(status)
 
@@ -138,7 +147,7 @@ class SourceCombobox(object):
     def __init__(self, gui, feedliststore, liststore):
         self.widget = gui.get_object('combobox_source')
         self.widget.set_model(liststore.account_liststore)
-        
+
         num = 0
         if feedliststore:
             for i, v in enumerate(liststore.account_liststore):
@@ -154,46 +163,52 @@ class SourceCombobox(object):
             account[AccountColumn.ID]
         return source, user_name
 
+    def get_active_account_obj(self):
+        account = self.widget.get_model()[self.widget.get_active()]
+        return account[AccountColumn.ACCOUNT]
+
 class TargetCombobox(object):
 
     def __init__(self, gui, feedliststore):
         self.widget = gui.get_object('comboboxtext_target')
+        self.feedliststore = feedliststore
 
-        self.label_list = sorted([x for x in TwitterAPIDict().keys()])
+    def set_label_text(self, account_obj):
+        labels = account_obj.api_dict.keys()
+        self.label_list = sorted([x for x in labels])
 
+        self.widget.remove_all()
         for text in self.label_list:
             self.widget.append_text(text)
 
-        recent = SETTINGS_TWITTER.get_int('recent-target')
-        num = self.label_list.index(feedliststore[Column.TARGET].decode('utf-8')) \
-            if feedliststore else recent if recent >= 0 else \
-            self.label_list.index(_("User Stream"))
-
+        num = account_obj.get_recent_api(self.label_list, self.feedliststore)
         self.widget.set_active(num)
 
     def get_active_text(self):
         label = self.label_list[self.widget.get_active()]
         return label
 
-    def set_recent(self):
+    def set_recent(self, account_obj):
         num = self.widget.get_active()
-        SETTINGS_TWITTER.set_int('recent-target', num)
+        account_obj.set_recent_api(num)
 
-    def has_argument_entry_enabled(self):
+    def has_argument_entry_enabled(self, api_dict):
         api_name = self.get_active_text()
-        api_class = TwitterAPIDict().get(api_name)
+        api_class = api_dict.get(api_name)
         status = api_class.has_argument
 
         return status
 
 class ArgumentEntry(object):
 
-    def __init__(self, gui, combobox_target):
+    def __init__(self, gui, combobox_target, combobox_source):
         self.widget = gui.get_object('entry_argument')
         self.combobox_target = combobox_target
+        self.combobox_source = combobox_source
 
     def get_text(self):
-        has_argument = self.combobox_target.has_argument_entry_enabled()
+        api_dict = self.combobox_source.get_active_account_obj().api_dict
+        has_argument = self.combobox_target.has_argument_entry_enabled(api_dict)
         return self.widget.get_text() if has_argument else ''
 
     def set_text(self, text):
@@ -224,17 +239,17 @@ class FeedSourceTreeview(TreeviewBase):
 
     def on_drag_begin(self, treeview, dragcontext):
         treeselection = treeview.get_selection()
-        model, iter = treeselection.get_selected()
+        model, treeiter = treeselection.get_selected()
 
-        self.api_obj = model.get_value(iter, Column.API)
-        self.group = model.get_value(iter, Column.GROUP).decode('utf-8')
+        self.api_obj = model.get_value(treeiter, Column.API)
+        self.group = model.get_value(treeiter, Column.GROUP).decode('utf-8')
         self.old_page = model.get_group_page(self.group)
 
     def on_drag_end(self, treeview, dragcontext, mainwindow):
         treeselection = treeview.get_selection()
-        model, iter = treeselection.get_selected()
+        model, treeiter = treeselection.get_selected()
 
-        if not iter:
+        if not treeiter:
             self.gui.get_object('button_feed_prefs').set_sensitive(False)
             self.gui.get_object('button_feed_del').set_sensitive(False)
 
