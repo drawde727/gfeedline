@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from gi.repository import Gtk, GLib, Gio, GdkPixbuf
+from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf
 
 from constants import SHARED_DATA_FILE
 from accountliststore import AccountColumn
@@ -133,11 +133,13 @@ class UpdateWindow(UpdateWidgetBase):
         self.button_image.set_sensitive(source == 'Twitter')
 
         widget = self.label_num if source == 'Twitter' \
-            else self.comboboxtext_privacy.widget
+            else self.comboboxtext_privacy.widget if source == 'Facebook' \
+            else None
 
         if self.child: # for GtkGrid.get_child_at no available
             self.grid_button.remove(self.child)
-        self.grid_button.attach(widget, 0, 0, 1, 1)
+        if widget:
+            self.grid_button.attach(widget, 0, 0, 1, 1)
         self.child = widget
 
     def on_textbuffer_changed(self, text_buffer):
@@ -146,6 +148,12 @@ class UpdateWindow(UpdateWidgetBase):
 
         status = bool(num != 140)
         self.button_tweet.set_sensitive(status)
+
+    def on_textview_key_press_event(self, textview, event):
+        if (event.keyval == Gdk.KEY_Return and 
+            'GDK_CONTROL_MASK' in event.state.value_names):
+            print "yes"
+            return True
 
 class AccountCombobox(object):
 

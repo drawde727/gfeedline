@@ -4,8 +4,27 @@
 	* twitter/getauthtoken.py: Updated Twitter OAuth URLs (issue #16).
 	  Thanks @gion_XY & @Sururu_s2!
 
+2013-02-23  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* tumblr/entry.py: Removed depends on 'image' template.
+	* updatewindow.py, update.glade: Added new short cut keys framework.
+
+2012-12-06  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* output.py: Added checking for duplicated posts.
+
+2012-12-04  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* tumblr/*: Added support for all entry types on Tumblr.
+
+2012-12-03  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* tumblr/api.py, tumblr/account.py: Added support for 'post' &
+	  'posts' API.
+
 2012-11-28  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
 
+	* utils/truncatehtml.py: Added HTML truncation for Tumblr.
 	* po/id_ID.po: Added new Indonesian translation.  Thanks kuspoes!
 
 2012-11-19  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
