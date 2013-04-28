@@ -23,7 +23,6 @@ from twisted.internet import error as ierror
 from twisted.python import failure, log
 from twisted.web import client, error, http_headers
 
-#from twittytwister import streaming, txml
 import streaming
 import txml
 import tjson
@@ -304,10 +303,6 @@ class Twitter(object):
         parser = parser_factory(delegate, extra_args)
         return self.__downloadPage(path, parser, params)
 
-    def __get_json(self, path, delegate, params, parser_factory=tjson.Parser, extra_args=None):
-        parser = parser_factory(delegate)
-        return self.__downloadPage(path, parser, params)
-
     def verify_credentials(self, delegate=None):
         "Verify a user's credentials."
         parser = txml.Users(delegate)
@@ -501,16 +496,6 @@ class Twitter(object):
         d = defer.Deferred()
 
         self.__downloadPage(url, txml.Users(lambda u: d.callback(u))) \
-            .addErrback(lambda e: d.errback(e))
-
-        return d
-
-    def configuration(self):
-
-        url = '/help/configuration.json'
-        d = defer.Deferred()
-
-        self.__downloadPage(url, tjson.Parser(lambda u: d.callback(u))) \
             .addErrback(lambda e: d.errback(e))
 
         return d
