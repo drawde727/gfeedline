@@ -1,5 +1,6 @@
-from ...twittytwister import twitter, txml
+from twisted.internet import defer
 from oauth import oauth
+from ...twittytwister import twitter, tjson
 
 from api import TwitterAPIDict
 from getauthtoken import CONSUMER
@@ -108,9 +109,22 @@ class Twitter(twitter.Twitter):
             'https://api.twitter.com/1.1/statuses/update_with_media.json',
             fields=tuple(fields))
 
+    def configuration(self):
+        url = '/help/configuration.json'
+        d = defer.Deferred()
+
+        self.__downloadPage(url, tjson.Parser(lambda u: d.callback(u))) \
+            .addErrback(lambda e: d.errback(e))
+
+        return d
+
     def update_token(self, token):
         self.use_auth = True
         self.use_oauth = True
         self.consumer = CONSUMER
         self.token = token
         self.signature_method = oauth.OAuthSignatureMethod_HMAC_SHA1()
+
+    def __get_json(self, path, delegate, params, parser_factory=tjson.Parser, extra_args=None):
+        parser = parser_factory(delegate)
+        return self.__downloadPage(path, parser, params)
