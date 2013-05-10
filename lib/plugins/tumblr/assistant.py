@@ -67,7 +67,7 @@ class TumblrAuthAssistant(Gtk.Assistant):
 
     def _get_access_token_cb(self, w, url):
         # print "!!! ", url
-        re_verifier = re.compile('.*oauth_verifier=(.*)&?.*')
+        re_verifier = re.compile('.*oauth_verifier=([^#&]*)[#&]?.*')
         verifier = re_verifier.sub("\\1", url)
         token, params = TumblrAuthorization().get_access_token(verifier, self.token)
 
