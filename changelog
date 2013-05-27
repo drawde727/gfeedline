@@ -1,3 +1,8 @@
+2013-05-27  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* twitter/tweetentry.py (TwitterEntities): Added support for
+	  Twitter entities (issue #18) and inline image view (issue #9).
+
 2013-05-26  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
 
 	* twitter/tweetentry.py (TweetEntry): Fixed Twitter commands.

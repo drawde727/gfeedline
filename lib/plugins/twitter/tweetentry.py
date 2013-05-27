@@ -58,7 +58,9 @@ class TweetEntry(object):
 
         time = TimeFormat(entry.created_at)
         body_string = self._get_body(entry.text) # FIXME
-        body = add_markup.convert(body_string) # add_markup is global
+        entities = entry.raw['entities'] if entry.raw else entry.entities
+        body = TwitterEntities().convert(body_string, entities)
+
         user = self._get_sender(api)
 
         styles = self._get_styles(api, user.screen_name, entry)
@@ -395,6 +397,64 @@ class FeedEventEntry(TweetEntry):
 
     def get_source_name(self):
         pass
+
+class TwitterEntities(object):
+
+    def convert(self, text, entities):
+        ent = {}
+        offset = 0
+
+        for key, val in entities.items():
+            for i in val:
+                ent[i['indices'][0]] = key, i
+
+        for key, value in sorted(ent.items()):
+            entity, v = value
+            start, end = key, v['indices'][1]
+
+            if entity == 'urls':
+                expanded_url = v['expanded_url']
+                alt = "<a href='%s' title='%s'>%s</a>" % (
+                    expanded_url, expanded_url, v['display_url'])
+                if expanded_url.endswith((".jpg", ".jpeg", ".png", ".gif")):
+                    text = self._add_image(text, expanded_url, expanded_url)
+
+            elif entity == 'user_mentions':
+                url = 'https://twitter.com/%s' %  v['screen_name']
+                alt = "<span class='%s'>@<a href='%s' title='%s'>%s</a></span>" % (
+                    'user-mentions', url, v['name'], v['screen_name'])
+
+            elif entity == 'hashtags':
+                url = 'https://twitter.com/search?q=%23' + v['text']
+                alt = "<span class='%s'>#<a href='%s'>%s</a></span>" % (
+                    'hashtags', url, v['text'])
+
+            elif entity == 'media':
+                alt = "<a href='%s'>%s</a>" % (v['expanded_url'], v['display_url'])
+                text = self._add_image(text, v['expanded_url'], v['media_url_https'])
+
+            else:
+                alt = text[start+offset:end+offset]
+
+            text = text[:start+offset] + alt + text[end+offset:]
+            offset += start-end+len(alt)
+        
+#        print text
+
+#        text = unescape(text)
+#        text = escape(text, {"'": '&apos;'}) # Important!
+        text = text.replace('"', '&quot;')
+        text = text.replace('\r\n', '\n')
+        text = text.replace('\n', '<br>')
+
+        return text
+
+    def _add_image(self, text, link_url, image_url):
+        img = ("<div class='image'>"
+               "<a href='%s'><img src='%s' height='90'></a></div>") % (
+            link_url, image_url)
+        text = text + img
+        return text
 
 class DictObj(object):
 
