@@ -148,8 +148,10 @@ class TwitterAPIUserStream(TwitterFeedAPIBase):
     def print_to_other_view(self, entry_dict):
         is_own_tweet = entry_dict['user_name'] == self.account.user_name
         is_reply = entry_dict['status_body'].count('@')
+        is_event = entry_dict.get('event')
 
-        view_target = _('Mentions') if is_own_tweet and is_reply else None
+        has_other_view = (is_own_tweet and is_reply) or is_event 
+        view_target = _('Mentions') if has_other_view else None
         return view_target
 
 class TwitterAPITrack(TwitterFeedAPIBase):
