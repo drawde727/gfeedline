@@ -113,6 +113,7 @@ class TweetEntry(object):
 
         replylink =   'gfeedlinetw://reply/%s' % entry_info
         retweetlink = 'gfeedlinetw://retweet/%s' % entry_info
+        deletelink =  'gfeedlinetw://delete/%s' % entry_info
         favlink =     'gfeedlinetw://fav/%s' % entry_info
         unfavlink =   'gfeedlinetw://unfav/%s' % entry_info
         morelink =    'gfeedlinetw://more/%s' % entry_info
@@ -127,6 +128,10 @@ class TweetEntry(object):
             if hasattr(entry.user, 'protected') else entry.user.get('protected')
         if not is_protected and api.account.user_name != user.screen_name:
             commands += "<a href='%s' title='%s'><i class='icon-retweet icon-large'></i><span class='label'>%s</span></a> " % (retweetlink, _('Retweet'), _('Retweet'))
+
+        # Delete
+        if api.account.user_name == user.screen_name:
+            commands += "<a href='%s' title='%s'><i class='icon-trash icon-large'></i><span class='label'>%s</span></a> " % (deletelink, _('Delete'), _('Delete'))
 
         # Favorite
         commands += (
