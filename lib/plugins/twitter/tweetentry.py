@@ -239,6 +239,9 @@ class DirectMessageEntry(TweetEntry):
     def _get_sender(self, api):
         return DictObj(self.entry.sender)
 
+    def _get_commands(self, entry, user, api):
+        return ''
+
     def _get_styles(self, api, screen_name, entry):
         return ''
 
