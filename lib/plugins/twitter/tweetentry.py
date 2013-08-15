@@ -335,7 +335,7 @@ class MyFeedRetweetEntry(FeedRetweetEntry):
             user_name=user['screen_name'],
             full_name=user['name'],
             user_color=user_color.get(user['screen_name']),
-            user_description=self._clean_description(user.description),
+            user_description=self._clean_description(user['description']),
 
             protected=self._get_protected_icon(user['protected']),
             source=self._decode_source_html_entities(self.original_entry.source),
