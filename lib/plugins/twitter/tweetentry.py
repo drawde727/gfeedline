@@ -457,6 +457,10 @@ class TwitterEntities(object):
                     url = 'http://twitpic.com/show/%s/' + twitpic_id
                     text = self._add_image(text, url % 'full', url % 'thumb')
 
+                if expanded_url.startswith("http://instagram.com/p/"):
+                    url = expanded_url + 'media/?size=t'
+                    text = self._add_image(text, expanded_url, url, replace=False)
+
                 if expanded_url.endswith((".jpg", ".jpeg", ".png", ".gif")):
                     text = self._add_image(text, expanded_url, expanded_url)
 
@@ -492,8 +496,9 @@ class TwitterEntities(object):
 
         return text
 
-    def _add_image(self, text, link_url, image_url, height=90):
-        link_url = link_url.replace('http', 'gfeedlineimg', 1)
+    def _add_image(self, text, link_url, image_url, height=90, replace=True):
+        if replace:
+            link_url = link_url.replace('http', 'gfeedlineimg', 1)
         img = ("<div class='image'>"
                "<a href='%s'><img src='%s' height='%s'></a></div>") % (
             link_url, image_url, height)

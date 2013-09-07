@@ -1,3 +1,8 @@
+2013-09-08  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* twitter/tweetentry.py (TwitterEntities): Added support for
+	  thumbnails for photos of instagram.
+
 2013-09-01  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
 
 	* NEWS: 2.4 release.
