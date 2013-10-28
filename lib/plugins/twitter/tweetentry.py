@@ -9,9 +9,9 @@ from xml.sax.saxutils import escape, unescape
 
 from BeautifulSoup import BeautifulSoup
 
+from ..base.entry import EntryStyles
 from ...utils.usercolor import UserColor
 from ...utils.timeformat import TimeFormat 
-from ...utils.htmlentities import decode_html_entities
 
 user_color = UserColor()
 
@@ -59,9 +59,8 @@ class TweetEntry(object):
         entry = self.entry
 
         time = TimeFormat(entry.created_at)
-        body_string = self._get_body(entry.text) # FIXME
         entities = entry.raw['entities'] if entry.raw else entry.entities
-        body = TwitterEntities().convert(body_string, entities)
+        body = TwitterEntities().convert(entry.text, entities)
 
         user = self._get_sender(api)
 
@@ -96,7 +95,7 @@ class TweetEntry(object):
             source=self._get_source(entry),
 
             status_body=body,
-            popup_body=body_string,
+            popup_body=entry.text,
             command=self._get_commands(entry, user, api),
             target=target
             )
@@ -115,7 +114,7 @@ class TweetEntry(object):
         return text
 
     def _get_styles(self, api, screen_name, entry=None):
-        style_obj = EntryStyles()
+        style_obj = TwitterEntryStyles()
         return style_obj.get(api, screen_name, entry)
 
     def _get_commands(self, entry, user, api):
@@ -187,8 +186,6 @@ class TweetEntry(object):
         return self._parse_source_html(self.entry.source)
 
     def _parse_source_html(self, source):
-        source = decode_html_entities(source)
-
         if source.startswith('<a href='):
             soup = BeautifulSoup(source)
             source = [x.contents[0] for x in soup('a')][0]
@@ -201,17 +198,13 @@ class TweetEntry(object):
                               entry.in_reply_to_status_id)
         return text
 
-    def _get_body(self, text):
-        text = decode_html_entities(text) # need to decode!
-        return text
-
     def _get_protected_icon(self, attribute):
         icon = "<i class='icon-lock'></i>"
         return icon if attribute and attribute != 'false' else ''
 
     def _decode_source_html_entities(self, source_html):
-        source_html = unescape(source_html)
-        return decode_html_entities(source_html).replace('"', "'")
+        source_html = unescape(source_html).replace('"', "'")
+        return source_html
 
     def _get_target_date_time(self, target_object, original_screen_name):
         "Get the datetime of retweeted original post not retweeting post."
@@ -224,35 +217,14 @@ class TweetEntry(object):
 
         return target_date_time
 
-class EntryStyles(object):
+class TwitterEntryStyles(EntryStyles):
 
     def get(self, api, screen_name, entry=None):
-
-        styles = [ self._get_style_own_message(api, screen_name) ]
-
-        if entry:
-            styles.append(self._get_style_reply(entry, api))
-            styles.append(self._get_style_favorited(entry) )
-
-        styles_string = " ".join([x for x in styles if x])
+        styles_string = super(TwitterEntryStyles, self).get(api, screen_name, entry)
 
         if not styles_string:
             styles_string = "normaltweet"
         return styles_string
-
-    def _get_style_own_message(self, api, name):
-        return 'mine' if api.account.user_name == name else ''
-
-    def _get_style_reply(self, entry, api):
-        return 'reply' \
-            if entry.in_reply_to_screen_name == api.account.user_name else ''
-
-    def _get_style_favorited(self, entry):
-        fav = entry.favorited
-        return '' if fav == 'false' or not fav else 'favorited'
-
-    def _get_style_retweet(self):
-        pass
 
 class DirectMessageEntry(TweetEntry):
 
