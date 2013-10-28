@@ -33,7 +33,7 @@ class MainWindow(object):
         self.column = MultiColumnDict(gui) # multi-columns for Notebooks
         self.theme = Theme()
         self.font = FontSet()
-        self.notification = StatusNotification('GFeedLine')
+        self.notification = StatusNotification(liststore)
 
         dnd_list = [Gtk.TargetEntry.new("text/uri-list", 0, 1),
                     Gtk.TargetEntry.new("text/x-moz-url", 0, 4),]
@@ -149,7 +149,7 @@ class MainWindow(object):
         self.on_stop()
 
     def on_menuitem_update_activate(self, menuitem):
-        UpdateWindow(self)
+        UpdateWindow(self.liststore)
 
     def on_menuitem_prefs_activate(self, menuitem):
         Preferences(self)
