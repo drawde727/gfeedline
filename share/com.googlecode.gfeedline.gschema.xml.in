@@ -31,6 +31,11 @@
       <summary>Recent used account number</summary>
       <description>Recent used account number</description>
     </key>
+    <key name="smart-tab-close" type="b">
+      <default>false</default>
+      <summary>Smart sensitiveness setting of close tab menu item</summary>
+      <description>User can delete only tabs without name or temporary tabs from tab menu item.</description>
+    </key>
     <child name="view" schema="com.googlecode.gfeedline.view"/>
     <child name="geometry" schema="com.googlecode.gfeedline.geometry"/>
     <child name="plugins" schema="com.googlecode.gfeedline.plugins"/>

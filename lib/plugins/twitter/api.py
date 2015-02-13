@@ -75,6 +75,7 @@ class TwitterAPIUserTimeLine(TwitterAPIBase):
     output = TwitterUserTimeLineOutput
     has_argument = True
     rate_limit = 180
+    tmp_tab = True # can close with tab menu item
 
     def _get_api(self):
         return self.account.api.user_timeline
@@ -133,6 +134,7 @@ class TwitterAPIRelatedResults(TwitterAPIBase):
     name = _('Related Results')
     output = TwitterRelatedResultOutput
     has_argument = True
+    tmp_tab = True # can close with tab menu item
 
     def _get_api(self):
         return self.account.api.related_results

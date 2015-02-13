@@ -1,3 +1,9 @@
+2015-02-13  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
+
+	* window.py (NotebookPopUpMenu): Added new gsetting key of
+	  smart-tab-close.  User can delete only tabs without name or
+	  temporary tabs from tab menu item.
+
 2015-02-03  Yoshizumi Endo  <y-endo@ceres.dti.ne.jp>
 
 	* view.py (FeedWebViewScroll): Improved auto scroll stop timer.

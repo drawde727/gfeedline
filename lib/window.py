@@ -339,9 +339,22 @@ class NotebookPopUpMenu(object):
     def start(self, widget, event):
         self.child = widget.get_nth_page(widget.get_current_page()
                                          ).get_children()[1] # FIXBOX
-        
+
+        if SETTINGS.get_boolean('smart-tab-close'):
+            self._set_sensitive_close_tab_menuitem()
+
         menu = self.gui.get_object('notebook_popup_menu')
         menu.popup(None, None, None, None, event.button, event.time)
+
+    def _set_sensitive_close_tab_menuitem(self):
+        menuitem_close_tab = self.gui.get_object('menuitem_close_tab')
+        for i, v in reversed(list(enumerate(self.liststore))):
+            if v[Column.API].view == self.child:
+                tmp_tab = hasattr(v[Column.API].view.api, 'tmp_tab')
+                has_name = bool(v[Column.NAME])
+                sensitive = not tmp_tab and has_name
+                menuitem_close_tab.set_sensitive(not sensitive)
+                break
 
     def on_menuitem_close_tab_activate(self, menuitem):
         if self.child.feed_counter > 1:
